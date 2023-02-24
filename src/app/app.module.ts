@@ -22,6 +22,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import {MatSelectModule} from '@angular/material/select';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -38,8 +40,9 @@ import {MatSelectModule} from '@angular/material/select';
   ReactiveFormsModule,
    MatInputModule,
    MatFormFieldModule,MatRadioModule,MatSliderModule,
-   MatCheckboxModule,MatDatepickerModule,
+   MatCheckboxModule,MatDatepickerModule,MatSnackBarModule,
    MatNativeDateModule,MatRippleModule,MatButtonModule,MatCardModule,MatIconModule,MatToolbarModule,MatTableModule,MatChipsModule,MatSelectModule
+  ,HttpClientModule
   ],
 
   providers: [],

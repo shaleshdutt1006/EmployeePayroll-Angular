@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 import { ActivatedRoute } from '@angular/router';
-//import { Employee } from 'src/app/model/employee';
-// import { DataService } from 'src/app/service/data-service';
-// import { HttpService } from 'src/app/service/http.service';
+import { Employee } from 'src/app/model/employee';
+import { HttpService } from 'src/app/service/http.service';
+
 @Component({
   selector: 'app-add-employee',
   templateUrl: './add-employee.component.html',
@@ -14,7 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class AddEmployeeComponent implements OnInit{
   
-
+  public employee: Employee = new Employee();  
 
   employeeForm!: FormGroup;
 
@@ -28,19 +27,24 @@ export class AddEmployeeComponent implements OnInit{
   ]
 
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder,
+              private route: ActivatedRoute,
+              private router: Router,private httpService:HttpService) {
+                      
     this.employeeForm = this.formBuilder.group({
-      name: new FormControl(''),
-      profilePic: new FormControl(''),
-      gender: new FormControl(''),
-      department: new FormArray([]),
-      salary: new FormControl(''),
-      startDate: new FormControl(''),
-      note: new FormControl('')
+      name: new FormControl('', [Validators.required,
+                                Validators.maxLength(30),
+                                Validators.minLength(3)]),
+      profilePic: new FormControl('', Validators.required),
+      gender: new FormControl('', Validators.required),
+      department: new FormArray([], Validators.required),
+      salary: new FormControl('', Validators.required),
+      startDate: new FormControl('', Validators.required),      
+      note: new FormControl('', Validators.required)
     })
    }
-
-
+ 
+  
   ngOnInit(): void {
   }
 
@@ -60,25 +64,55 @@ export class AddEmployeeComponent implements OnInit{
   }
 
 
-  /**
-   * To read Salary value from slider
-   */
-  salary: number = 400000;
-  updateSetting(event: any) {
-    this.salary = event.value;
-  }
+  // /**
+  //  * To read Salary value from slider
+  //  */
+  // salary: number = 400000;
+  // updateSetting(event: any) {
+  //   this.salary = event.value;
+  // }
 
-
-  formatLabel(value: any) {
+  // formatLabel(value: number): string {
+  //   if (value >= 1000) {
+  //     return Math.round(value / 1000) + 'k';
+  //   }
+  //   return value.toString();
+  // }
+  formatLabel(value: number): string {
     if (value >= 1000) {
       return Math.round(value / 1000) + 'k';
     }
-    return value;
+
+    return `${value}`;
+  }
+
+  // To get the controls of the form
+  get formControls(){
+    return this.employeeForm.controls
   }
 
 
-  submitForm(){
-    console.log(this.employeeForm.value)
+  public myError = (controlName: string, errorName: string) => {
+    return this.employeeForm.controls[controlName].hasError(errorName)
   }
 
+
+  get fullName(): FormControl{
+    return this.employeeForm.get('name') as FormControl
+  }
+
+
+  submitForm(){      
+    this.employee=this.employeeForm.value
+    console.log(this.employee)    
+    this.httpService.addEmployeeData(this.employee).subscribe(response => {
+      console.log(response)
+      this.router.navigate(['home-page'])
+    })
+   }
+
+
+  resetForm(){
+    this.employeeForm.reset()
+  }
 }
